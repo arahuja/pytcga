@@ -37,6 +37,7 @@ if __name__ == '__main__':
         install_requires=[
             'pandas >=0.13.1',
             'nose >=1.3.6',
+            'beautifulsoup4',
             'requests',
         ],
         long_description=readme,
