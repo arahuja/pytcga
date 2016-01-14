@@ -82,6 +82,22 @@ def load_clinical_data(disease_code):
     """
     patient_data_path = request_clinical_data(disease_code, cache=True)
 
-    patient_data_df = pd.read_csv(patient_data_path, sep='\t')
+    columns = pd.read_csv(patient_data_path,
+                            sep='\t',
+                            skiprows=1,
+                            nrows=10).columns
+
+    patient_data_df = pd.read_csv(patient_data_path,
+                    sep='\t', 
+                    skiprows=2,
+                    header=0,
+                    names=columns,
+                    na_values='[Not Available]')
+
+    logging.info("Loaded {} rows of clinical data from {} patients".format(
+            len(patient_data_df),
+            patient_data_df['bcr_patient_barcode'].nunique()
+        )
+    )
 
     return patient_data_df
