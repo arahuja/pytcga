@@ -40,7 +40,7 @@ def request_clinical_data(disease_code,
     if not os.path.exists(disease_code_dir):
         os.mkdir(disease_code_dir)
 
-    clinical_data_directory = TCGA_CLINICAL_URL.format(disease_code)
+    clinical_data_directory = TCGA_CLINICAL_URL.format(disease_code.lower())
     r = requests.get(clinical_data_directory)
     soup = BeautifulSoup(r.content)
 
