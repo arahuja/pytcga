@@ -15,6 +15,11 @@ from appdirs import user_data_dir
 
 PYTCGA_BASE_DIRECTORY = user_data_dir("pytcga", version="0.1")
 
+def check_if_exists_cached_file(output_file_name):
+    return os.path.exists(
+        os.path.join(PYTCGA_BASE_DIRECTORY, output_file_name)
+    )
+
 
 def tcga_request(disease,
                   center=None,
