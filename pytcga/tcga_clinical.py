@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from .tcga_requests import PYTCGA_BASE_DIRECTORY
+from .clinical_data_dictionary import clinical_data_dictionary
 
 TCGA_CLINICAL_URL = "https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/{}/bcr/biotab/clin/"
 
@@ -67,7 +68,7 @@ def request_clinical_data(disease_code,
     return patient_data_path
 
 
-def load_clinical_data(disease_code):
+def load_clinical_data(disease_code, recode_columns=True):
     """Downloads and loads the TCGA clinical data into a Pandas dataframe
 
     Parameters
@@ -93,6 +94,13 @@ def load_clinical_data(disease_code):
                     header=0,
                     names=columns,
                     na_values='[Not Available]')
+
+    if recode_columns:
+        for column in clinical_data_dictionary:
+            if column in patient_data_df.columns:
+                patient_data_df[column] = patient_data_df[column].map(
+                        lambda val: clinical_data_dictionary[column].get(val, val)
+                    )
 
     logging.info("Loaded {} rows of clinical data from {} patients".format(
             len(patient_data_df),
