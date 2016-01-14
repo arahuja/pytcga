@@ -61,7 +61,7 @@ def tcga_request(disease,
     return check_and_retrieve_archive(
                                 status_url, 
                                 archive_file_name=output_file_name, 
-                                wait_time=90)
+                                wait_time=wait_time)
 
 
 def create_tcga_filter_request(disease,
