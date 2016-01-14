@@ -20,7 +20,7 @@ def request_mutation_data(disease_code,
 
     # Unpack tar file
     archive = tarfile.open(archive_path)
-    archive.extractall()
+    archive.extractall(os.path.dirname(archive_path))
 
     # Filter to MAF files
     maf_files = [f 
