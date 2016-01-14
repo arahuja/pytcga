@@ -3,29 +3,45 @@
 Python library for accessing and processing public TCGA data
 
 
-#### Example query
+## Examples
 
+#### Loading Clinical Data
 ```python
 
 import pytcga
 
-# Downloading LUAD mutations
-luad_mutations = \
-    pytcga.request(
-        disease='LUAD',
-        level='2',
-        center='BI',
-        platformType='Somatic Mutations'
-        platform='Automated Mutation Calling')
+# Downloading and loading LUAD patient data
+clinical = pytcga.load_clinical_data('luad')
+```
 
-# Downloading LUAD RNASeq
-luad_rna = \
-    pytcga.request(
-        disease='LUAD',
-        level='3',
-        center='7',
-        platformType='RNASeqV2',
-        platform='IlluminaHiSeq_RNASeqV2',
-        wait_time=30)
+#### Loading Mutation Data
+
+```python
+import pytcga
+
+# Downloading and loading LUAD mutations
+luad_mutations = \
+    pytcga.load_mutation_data(disease_code='LUAD', with_clinical=False)
+
+
+# Also appends clinical data with `with_clinical` flag
+luad_mutations = \
+    pytcga.load_mutation_data(disease_code='LUAD', with_clinical=True)
+
+# Filter variants with the `variant_type` argument
+# variant_type = {'all', 'indel', SNP', 'INS', 'DEL'}
+luad_indel_mutations = \
+    pytcga.load_mutation_data(disease_code='LUAD', with_clinical=True, variant_type='indel')
 
 ```
+
+#### Loading RNASeq Data
+```python
+import pytcga
+
+# Downloading and loading LUAD mutations
+luad_rnaseq = \
+    pytcga.load_rnaseq_data(disease_code='LUAD', with_clinical=True)
+
+```
+
