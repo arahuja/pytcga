@@ -25,6 +25,8 @@ if __name__ == '__main__':
         name='pytcga',
         version="0.0.1",
         description="Store and query public TCGA data",
+        author="Arun Ahuja",
+        author_email="aahuja11 {at} gmail {dot}",
         url="https://github.com/arahuja/pytcga",
         classifiers=[
             'Development Status :: 3 - Alpha',
