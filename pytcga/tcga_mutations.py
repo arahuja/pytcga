@@ -30,7 +30,7 @@ def request_mutation_data(disease_code,
     return maf_files
 
 def load_mutation_data(disease_code,
-                       with_clinical=True,
+                       with_clinical=False,
                        variant_type='all',
                        wait_time=30):
 
