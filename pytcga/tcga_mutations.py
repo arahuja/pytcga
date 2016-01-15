@@ -6,7 +6,7 @@ import pandas as pd
 from pytcga.tcga_requests import tcga_request
 from pytcga.tcga_clinical import load_clinical_data
 
-def request_mutation_data(disease_code,
+def prefetch_mutation_data(disease_code,
                           wait_time=30,
                           cache=True,):
 
@@ -18,27 +18,32 @@ def request_mutation_data(disease_code,
                                wait_time=wait_time,
                                cache=cache)
 
-    # Unpack tar file
-    archive = tarfile.open(archive_path)
-    archive.extractall(os.path.dirname(archive_path))
-
-    # Filter to MAF files
-    maf_files = [f 
-                    for f in os.listdir(os.path.dirname(archive_path)) 
-                    if f.endswith('.maf')]
-
-    return maf_files
+    return archive_path
 
 def load_mutation_data(disease_code,
                        with_clinical=False,
                        variant_type='all',
                        wait_time=30):
 
-    maf_files = request_mutation_data(disease_code,
+    archive_path = prefetch_mutation_data(disease_code,
                                       wait_time=wait_time,
                                       cache=True)
 
-    mutation_df = pd.concat([pd.read_csv(maf_file,
+    # Unpack tar file
+    archive = tarfile.open(archive_path)
+
+    result_dir = os.path.join(os.path.dirname(archive_path), disease_code, 'mutations')
+    if not os.path.exists(result_dir):
+        os.makedirs(result_dir)
+
+    archive.extractall(path=result_dir)
+
+    # Filter to MAF files
+    maf_files = [f 
+                  for f in os.listdir(result_dir) 
+                  if f.endswith('.maf')]
+
+    mutation_df = pd.concat([pd.read_csv(os.path.join(result_dir, maf_file),
                                     sep='\t', 
                                     na_values='[Not Available]') 
                     for maf_file in maf_files])
