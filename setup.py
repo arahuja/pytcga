@@ -23,7 +23,7 @@ except:
 if __name__ == '__main__':
     setup(
         name='pytcga',
-        version="0.0.1",
+        version="0.0.2",
         description="Store and query public TCGA data",
         author="Arun Ahuja",
         author_email="aahuja11 {at} gmail {dot}",
