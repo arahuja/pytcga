@@ -1,0 +1,36 @@
+sudo: false
+language: python
+python:
+- '2.7'
+- '3.4'
+before_install:
+- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+  -O miniconda.sh; else wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  -O miniconda.sh; fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- conda info -a
+addons:
+  apt:
+    packages:
+    - pandoc
+install:
+- |
+  conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION nose pandas
+- source activate test-environment
+- pip install pypandoc
+- pip install -r requirements.txt
+- pip install .
+script:
+- nosetests --with-coverage --cover-package=pytcga
+after_success: coveralls
+deploy:
+  provider: pypi
+  user: hammerlab
+  password:
+    secure: klelrF8jQ4uPq8q1jQv2HCS8MO2jXjd3Kx2SGLwq9BS1tIqTjhivrQT1aWFowI7nzyI2hOerKQ7YSoKw28r+qaDy7zM725r4RNQcVW0XrDV2yvuJudh8icWWi2Vz8VwFXUSP+yBLVhyQfKSILoG3Bmh/NSq43uDwvRhKLse3lBhC7oFZsxd0hSncZAf/uyDmBLU/8vq7LzP2enA6zQs0Hx6rQw741yzjIKDu3OaJUazXzwcWz6OxeNdmFBxwSURfPVt/MVvJ9fjgCyUJ+oflRRrqDoxG7CFl1Nh7vbutUINLIIf5cJXYzKdX78+aoZHyPosdqI8mPG6L9VnlAvNkJg5kVkqOB8XJLhTXQnRIB+Ws8IiACLSC33+dMpwC+3z5cTdrEooayGPJ+u3Y1VH3yStdo3Tdvit3RYLL//xMUm9xZ8DStNXuPCxLipCsewdussTHDtxmTXcvHSADHsTd+59uxepsaKU1QqLKFj3jnBL7fUjfy+kKamAxghM1EqLovGqVqBpd9izS4p6JR5t2Ehvhvd1MjT0W1MYbJApuJnhXZX86cd4vK8aSyQlqsJ4eaXzmo6HGGMgOrpDVtgWQAOuWcSSphLKATx5UiDWKiFab7LpdOho6wzDjNnniy9DTzpqOsGYy/SGKDAAXZgFeIebNqGt0XNyK/GZUdzmnkPk=
+  on:
+    branch: master
