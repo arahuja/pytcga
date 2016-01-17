@@ -39,7 +39,7 @@ def request_clinical_data(disease_code,
             return os.path.join(disease_code_dir, patient_data_file[0])
 
     if not os.path.exists(disease_code_dir):
-        os.mkdir(disease_code_dir)
+        os.makedirs(disease_code_dir)
 
     clinical_data_directory = TCGA_CLINICAL_URL.format(disease_code.lower())
     r = requests.get(clinical_data_directory)
