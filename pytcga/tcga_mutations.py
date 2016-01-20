@@ -46,7 +46,7 @@ def load_mutation_data(disease_code,
     mutation_df = pd.concat([pd.read_csv(os.path.join(result_dir, maf_file),
                                     sep='\t', 
                                     na_values='[Not Available]') 
-                    for maf_file in maf_files])
+                    for maf_file in maf_files], copy=False)
 
     # Expand out the TCGA barcode to retrieve the TCGA ID
     tcga_info = mutation_df['Tumor_Sample_Barcode'].str.rsplit('-', n=4, expand=True)

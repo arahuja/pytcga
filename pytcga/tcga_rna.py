@@ -57,7 +57,7 @@ def load_rnaseq_data(disease_code,
         sample_rna_df['gene_name'] = sample_rna_df.gene_id.str.split('|').str.get(0)
         rna_dfs.append(sample_rna_df)
 
-    rna_df = pd.concat(rna_dfs).merge(rna_file_sample_map)
+    rna_df = pd.concat(rna_dfs, copy=False).merge(rna_file_sample_map)
 
     if with_clinical:
         patient_data_df = load_clinical_data(disease_code)
