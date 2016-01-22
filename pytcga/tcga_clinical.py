@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 
 from .tcga_requests import PYTCGA_BASE_DIRECTORY
+from .tcga_utils import load_tcga_tabfile
 from .clinical_data_dictionary import clinical_data_dictionary
 
 TCGA_CLINICAL_URL = "https://tcga-data.nci.nih.gov/tcgafiles/ftp_auth/distro_ftpusers/anonymous/tumor/{}/bcr/biotab/clin/"
@@ -67,6 +68,8 @@ def request_clinical_data(disease_code,
 
     return patient_data_path
 
+def load_patient_data(disease_code, recode_columns=True):
+    return load_clinical_data(disease_code, recode_columns)
 
 def load_clinical_data(disease_code, recode_columns=True):
     """Downloads and loads the TCGA clinical data into a Pandas dataframe
@@ -83,17 +86,7 @@ def load_clinical_data(disease_code, recode_columns=True):
     """
     patient_data_path = request_clinical_data(disease_code, cache=True)
 
-    columns = pd.read_csv(patient_data_path,
-                            sep='\t',
-                            skiprows=1,
-                            nrows=10).columns
-
-    patient_data_df = pd.read_csv(patient_data_path,
-                    sep='\t', 
-                    skiprows=2,
-                    header=0,
-                    names=columns,
-                    na_values='[Not Available]')
+    patient_data_df = load_tcga_tabfile(patient_data_path, skiprows=1)
 
     if recode_columns:
         for column in clinical_data_dictionary:
@@ -109,3 +102,46 @@ def load_clinical_data(disease_code, recode_columns=True):
     )
 
     return patient_data_df
+
+def find_clinical_files(search_tag, disease_code_dir):
+    files = [f for f in os.listdir(disease_code_dir) if search_tag in f]
+    return files
+
+def load_samples(disease_code):
+    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    sample_files = find_clinical_files('_biospecimen_sample_', disease_code_dir)
+    sample_df = pd.concat(
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
+            for f in sample_files], 
+        copy=False)
+    return sample_df
+
+def load_analytes(disease_code):
+    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    analyte_files = find_clinical_files('_biospecimen_analyte_', disease_code_dir)
+    analyte_df = pd.concat(
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
+            for f in analyte_files], 
+        copy=False)
+    return analyte_df
+
+def load_treaments(disease_code):
+    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    analyte_files = find_clinical_files('_clinical_drug_ov', disease_code_dir)
+    analyte_df = pd.concat(
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f), skiprows=1) 
+            for f in analyte_files], 
+        copy=False)
+    return analyte_df
+
+def load_patient_samples(disease_code, recode_columns=True):
+    samples = load_samples(disease_code)
+    patient_data = load_patient_data(disease_code, recode_columns)
+
+    return patient_data.merge(samples, how='left')
+
+def load_patient_analytes(disease_code, recode_columns=True):
+    analytes = load_analytes(disease_code)
+    patient_data = load_patient_data(disease_code, recode_columns)
+
+    return patient_data.merge(analytes, how='left')
