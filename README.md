@@ -39,7 +39,7 @@ luad_indel_mutations = \
 ```python
 import pytcga
 
-# Downloading and loading LUAD mutations
+# Downloading and loading LUAD gene quantification
 luad_rnaseq = \
     pytcga.load_rnaseq_data(disease_code='LUAD', with_clinical=True)
 

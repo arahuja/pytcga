@@ -107,7 +107,7 @@ def find_clinical_files(search_tag, disease_code_dir):
     files = [f for f in os.listdir(disease_code_dir) if search_tag in f]
     return files
 
-def load_samples(disease_code):
+def _load_samples(disease_code):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     sample_files = find_clinical_files('_biospecimen_sample_', disease_code_dir)
     sample_df = pd.concat(
@@ -116,7 +116,7 @@ def load_samples(disease_code):
         copy=False)
     return sample_df
 
-def load_analytes(disease_code):
+def _load_analytes(disease_code):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     analyte_files = find_clinical_files('_biospecimen_analyte_', disease_code_dir)
     analyte_df = pd.concat(
@@ -126,22 +126,36 @@ def load_analytes(disease_code):
     return analyte_df
 
 def load_treaments(disease_code):
+    """Load the treatment entries for each patient
+
+    Parameters
+    ----------
+    disease_code : str
+        TCGA disease code
+
+    Returns
+    -------
+    treatment_df : Pandas dataframe
+        Dataframe of treatment entries for each patient
+    """
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
-    analyte_files = find_clinical_files('_clinical_drug_ov', disease_code_dir)
-    analyte_df = pd.concat(
+    treatment_files = find_clinical_files('_clinical_drug_ov', disease_code_dir)
+    treatment_df = pd.concat(
         [load_tcga_tabfile(os.path.join(disease_code_dir, f), skiprows=1) 
-            for f in analyte_files], 
+            for f in treatment_files], 
         copy=False)
-    return analyte_df
+    return treatment_df
 
 def load_patient_samples(disease_code, recode_columns=True):
-    samples = load_samples(disease_code)
+    """Load the samples taken per patient"""
+    samples = _load_samples(disease_code)
     patient_data = load_patient_data(disease_code, recode_columns)
 
     return patient_data.merge(samples, how='left')
 
 def load_patient_analytes(disease_code, recode_columns=True):
-    analytes = load_analytes(disease_code)
+    """Load the analytes per sample. Possible analytes include RNA or DNA"""
+    analytes = _load_analytes(disease_code)
     patient_data = load_patient_data(disease_code, recode_columns)
 
     return patient_data.merge(analytes, how='left')
