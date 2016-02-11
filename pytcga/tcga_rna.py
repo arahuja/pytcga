@@ -25,19 +25,17 @@ def load_rnaseq_data(disease_code,
     # Fetch RNA data
     archive_path = prefetch_rnaseq_data(disease_code)
 
-    # Unpack tar file
-    archive = tarfile.open(archive_path)
     result_dir = os.path.join(os.path.dirname(archive_path), disease_code, 'gene_expression')
 
     if not os.path.exists(result_dir):
         os.makedirs(result_dir)
+        # Unpack tar file
+        archive = tarfile.open(archive_path)
 
-    gene_quantification_files = set(el for el in archive if 'genes.normalized_results' in el.name)
-    if len(gene_quantification_files.difference(os.listdir(result_dir))) > 0:
-        archive.extractall(members=gene_quantification_files, path=result_dir)
-        archive.extract('FILE_SAMPLE_MAP.txt', path=result_dir)
-
-    gene_quantification_files = [el.name for el in gene_quantification_files]
+        gene_quantification_files = set(el for el in archive if 'genes.normalized_results' in el.name)
+        if len(gene_quantification_files.difference(os.listdir(result_dir))) > 0:
+            archive.extractall(members=gene_quantification_files, path=result_dir)
+            archive.extract('FILE_SAMPLE_MAP.txt', path=result_dir)
 
     # Load map from samples to RNA files
     rna_file_sample_map = pd.read_csv(os.path.join(result_dir, 'FILE_SAMPLE_MAP.txt'), sep='\t')
