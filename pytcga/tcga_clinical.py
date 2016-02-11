@@ -107,13 +107,15 @@ def find_clinical_files(search_tag, disease_code_dir):
     files = [f for f in os.listdir(disease_code_dir) if search_tag in f]
     return files
 
-def _load_samples(disease_code):
+def _load_samples(disease_code, filter_vial=None):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     sample_files = find_clinical_files('_biospecimen_sample_', disease_code_dir)
     sample_df = pd.concat(
         [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
             for f in sample_files], 
         copy=False)
+    if filter_vial:
+        sample_df = sample_df[sample_df.vial_number == filter_vial]
     return sample_df
 
 def _load_analytes(disease_code):
@@ -125,7 +127,7 @@ def _load_analytes(disease_code):
         copy=False)
     return analyte_df
 
-def load_treaments(disease_code):
+def load_treatments(disease_code):
     """Load the treatment entries for each patient
 
     Parameters
@@ -139,23 +141,32 @@ def load_treaments(disease_code):
         Dataframe of treatment entries for each patient
     """
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
-    treatment_files = find_clinical_files('_clinical_drug_ov', disease_code_dir)
+    treatment_files = find_clinical_files('_clinical_drug', disease_code_dir)
+    
     treatment_df = pd.concat(
         [load_tcga_tabfile(os.path.join(disease_code_dir, f), skiprows=1) 
             for f in treatment_files], 
         copy=False)
     return treatment_df
 
-def load_patient_samples(disease_code, recode_columns=True):
+def load_patient_samples(disease_code, recode_columns=True, filter_vial=None):
     """Load the samples taken per patient"""
-    samples = _load_samples(disease_code)
     patient_data = load_patient_data(disease_code, recode_columns)
+    samples = _load_samples(disease_code, filter_vial)
 
     return patient_data.merge(samples, how='left')
 
 def load_patient_analytes(disease_code, recode_columns=True):
     """Load the analytes per sample. Possible analytes include RNA or DNA"""
-    analytes = _load_analytes(disease_code)
     patient_data = load_patient_data(disease_code, recode_columns)
+    analytes = _load_analytes(disease_code)
 
     return patient_data.merge(analytes, how='left')
+
+def load_sample_and_analytes(disease_code, filter_vial=None):
+
+    samples = _load_samples(disease_code, filter_vial=filter_vial)
+    analytes = _load_analytes(disease_code)
+
+    return samples.merge(analytes)
+
