@@ -24,7 +24,24 @@ def load_mutation_data(disease_code,
                        with_clinical=False,
                        variant_type='all',
                        wait_time=30):
+    """Load variants from TCGA
+    
+    Parameters
+    ----------
+    disease_code : str
+        
+    with_clinical : bool, optional
+        If True, attach the clinical information
+    variant_type : str, optional
+        Filter to a specific variant type 'SNP', 'INDEL'
+    wait_time : int, optional
+        Time to wait for response from TCGA
 
+    Returns
+    -------
+    mutations : Pandas dataframe
+        A dataframe of mutations
+    """
     archive_path = prefetch_mutation_data(disease_code,
                                       wait_time=wait_time,
                                       cache=True)
