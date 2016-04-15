@@ -170,3 +170,13 @@ def load_sample_and_analytes(disease_code, filter_vial=None):
 
     return samples.merge(analytes)
 
+def load_aliquots(disease_code, recode_columns=True):
+    """Load the aliqouts taken per patient"""
+    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    aliquot_files = find_clinical_files('_biospecimen_aliquot_', disease_code_dir)
+    aliquot_df = pd.concat(
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
+            for f in aliquot_files], 
+        copy=False)
+    return aliquot_df
+
