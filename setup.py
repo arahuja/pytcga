@@ -1,5 +1,6 @@
 from __future__ import print_function
 import os
+import versioneer
 
 from setuptools import setup, find_packages
 
@@ -23,7 +24,8 @@ except:
 if __name__ == '__main__':
     setup(
         name='pytcga',
-        version="0.0.4",
+        version=versioneer.get_version(),
+        cmdclass=versioneer.get_cmdclass(),
         description="Store and query public TCGA data",
         author="Arun Ahuja",
         author_email="aahuja11 {at} gmail {dot}",
