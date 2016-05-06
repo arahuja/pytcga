@@ -15,7 +15,7 @@ def request_clinical_data(disease_code,
                   cache=True,
                   block_size=1024):
     """Downloads TCGA public clinical data from the TCGA FTP site
-    
+
     Parameters
     ----------
     disease_code : str
@@ -24,7 +24,7 @@ def request_clinical_data(disease_code,
         Whether to cache the results of the request
     block_size : int, optional
         Block size for file downloads
-    
+
     Returns
     -------
     patient_data_path : str
@@ -44,10 +44,10 @@ def request_clinical_data(disease_code,
 
     clinical_data_directory = TCGA_CLINICAL_URL.format(disease_code.lower())
     r = requests.get(clinical_data_directory)
-    soup = BeautifulSoup(r.content)
+    soup = BeautifulSoup(r.content, "html.parser")
 
     # Retrieve list of files and filter to txt files
-    file_links = [link.get('href') 
+    file_links = [link.get('href')
                     for link in soup.find_all('a')]
     clinical_files = [link for link in file_links if link.endswith('.txt')]
 
@@ -111,8 +111,8 @@ def _load_samples(disease_code, filter_vial=None):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     sample_files = find_clinical_files('_biospecimen_sample_', disease_code_dir)
     sample_df = pd.concat(
-        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
-            for f in sample_files], 
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f))
+            for f in sample_files],
         copy=False)
     if filter_vial:
         sample_df = sample_df[sample_df.vial_number == filter_vial]
@@ -122,8 +122,8 @@ def _load_analytes(disease_code):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     analyte_files = find_clinical_files('_biospecimen_analyte_', disease_code_dir)
     analyte_df = pd.concat(
-        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
-            for f in analyte_files], 
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f))
+            for f in analyte_files],
         copy=False)
     return analyte_df
 
@@ -142,10 +142,10 @@ def load_treatments(disease_code):
     """
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     treatment_files = find_clinical_files('_clinical_drug', disease_code_dir)
-    
+
     treatment_df = pd.concat(
-        [load_tcga_tabfile(os.path.join(disease_code_dir, f), skiprows=1) 
-            for f in treatment_files], 
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f), skiprows=1)
+            for f in treatment_files],
         copy=False)
     return treatment_df
 
@@ -175,8 +175,7 @@ def load_aliquots(disease_code, recode_columns=True):
     disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
     aliquot_files = find_clinical_files('_biospecimen_aliquot_', disease_code_dir)
     aliquot_df = pd.concat(
-        [load_tcga_tabfile(os.path.join(disease_code_dir, f)) 
-            for f in aliquot_files], 
+        [load_tcga_tabfile(os.path.join(disease_code_dir, f))
+            for f in aliquot_files],
         copy=False)
     return aliquot_df
-
