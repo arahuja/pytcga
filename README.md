@@ -5,6 +5,14 @@ Python library for accessing and processing public TCGA data
 
 ## Examples
 
+### Getting a list of all TCGA studies
+```python
+import pytcga
+
+# Get a list of study names and their abbreviations
+studies = pytcga.load_studies()
+```
+
 #### Loading Clinical Data
 ```python
 
@@ -44,4 +52,3 @@ luad_rnaseq = \
     pytcga.load_rnaseq_data(disease_code='LUAD', with_clinical=True)
 
 ```
-

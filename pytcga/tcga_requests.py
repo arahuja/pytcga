@@ -64,8 +64,8 @@ def tcga_request(disease,
 
     (ticket_id, status_url) = create_tcga_request(filter_parameters)
     return check_and_retrieve_archive(
-                                status_url, 
-                                archive_file_name=output_file_name, 
+                                status_url,
+                                archive_file_name=output_file_name,
                                 wait_time=wait_time)
 
 
@@ -156,14 +156,14 @@ def create_tcga_request(filter_parameters):
 
         logging.info(
             'Request received at {} for ticket {}, estimated size {}'.format(
-                submission_time, 
+                submission_time,
                 ticket_id,
                 estimated_size
             )
         )
 
         logging.info(
-            'Track ticket {} at {}'.format( 
+            'Track ticket {} at {}'.format(
                 ticket_id,
                 status_url
             )
