@@ -129,6 +129,11 @@ def create_tcga_filter_request(disease,
 
     return create_tcga_request(filter_parameters)
 
+class RequestError(Exception):
+    def __init__(self, code, msg):
+        self.code = code
+        self.msg = msg
+
 def create_tcga_request(filter_parameters):
     """Builds a webservice request from a dictionary of parameters
 
@@ -147,6 +152,18 @@ def create_tcga_request(filter_parameters):
     logging.debug("Request has status code {}".format(response.status_code))
 
     if response.status_code == 200:
+        # Even if the servers sends a 200 code, it doesn't mean that
+        # our request went through. For example, if you request data
+        # from the wrong center, the server returns 200, but the page
+        # will say: HTTP STATUS 204 - No Content...
+        # The following checks for these non-std errors.
+        rtext = response.text
+        if rtext.startswith("<h2>HTTP STATUS"):
+            error_code = rtext.split(' ')[2]
+            error_msg = rtext.split(' - ')[1]
+            raise RequestError(error_code, error_msg)
+
+        # If all looks fine, go ahead and parse the JSON
         parsed_response = response.json()
 
         ticket_id = parsed_response[TCGA_TICKET_ID_FIELD]
