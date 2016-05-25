@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/arahuja/pytcga.svg?branch=master)](https://travis-ci.org/arahuja/pytcga)
 ## pytcga
 
 Python library for accessing and processing public TCGA data
