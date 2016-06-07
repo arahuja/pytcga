@@ -43,6 +43,7 @@ if __name__ == '__main__':
             'nose >=1.3.6',
             'beautifulsoup4',
             'requests>=2.9.1',
+	    'appdirs>=1.4.0',
         ],
         long_description=readme,
         packages=find_packages(exclude=["test", "tests"]),

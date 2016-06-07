@@ -24,7 +24,7 @@ install:
 - pip install pypandoc
 - pip install .
 script:
-- nosetests --with-coverage --cover-package=pytcga
+- nosetests --cover-package=pytcga
 after_success: coveralls
 deploy:
   provider: pypi
