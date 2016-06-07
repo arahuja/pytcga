@@ -22,7 +22,6 @@ install:
   conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION nose pandas
 - source activate test-environment
 - pip install pypandoc
-- pip install -r requirements.txt
 - pip install .
 script:
 - nosetests --with-coverage --cover-package=pytcga

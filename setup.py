@@ -42,7 +42,7 @@ if __name__ == '__main__':
             'pandas >=0.13.1',
             'nose >=1.3.6',
             'beautifulsoup4',
-            'requests',
+            'requests>=2.9.1',
         ],
         long_description=readme,
         packages=find_packages(exclude=["test", "tests"]),
