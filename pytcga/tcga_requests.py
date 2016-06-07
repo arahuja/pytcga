@@ -15,11 +15,15 @@ from appdirs import user_data_dir
 
 PYTCGA_BASE_DIRECTORY = user_data_dir("pytcga", version="0.1")
 
+def cache_data_dir():
+    if not os.path.exists(PYTCGA_BASE_DIRECTORY):
+        os.makedirs(PYTCGA_BASE_DIRECTORY)
+    return PYTCGA_BASE_DIRECTORY
+
 def check_if_exists_cached_file(output_file_name):
     return os.path.exists(
-        os.path.join(PYTCGA_BASE_DIRECTORY, output_file_name)
+        os.path.join(cache_data_dir(), output_file_name)
     )
-
 
 def tcga_request(disease,
                   center=None,
@@ -57,7 +61,7 @@ def tcga_request(disease,
 
     # If using the cache, check if the file already exists
     if cache:
-        archive_path = os.path.join(PYTCGA_BASE_DIRECTORY, output_file_name)
+        archive_path = os.path.join(cache_data_dir(), output_file_name)
 
         if os.path.exists(archive_path):
             return archive_path
@@ -226,7 +230,7 @@ def retrieve_archive(archive_url,
     archive_path : str
         Full path to the downloaded archive
     """
-    archive_path = os.path.join(PYTCGA_BASE_DIRECTORY, output_file_name)
+    archive_path = os.path.join(cache_data_dir(), output_file_name)
     logging.info('Saving request to {}'.format(archive_path))
 
     with open(archive_path, 'wb') as archive:

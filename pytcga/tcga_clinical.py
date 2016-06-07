@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-from .tcga_requests import PYTCGA_BASE_DIRECTORY
+from .tcga_requests import cache_data_dir
 from .tcga_utils import load_tcga_tabfile
 from .clinical_data_dictionary import clinical_data_dictionary
 
@@ -31,7 +31,7 @@ def request_clinical_data(disease_code,
         Path to TCGA patient data file after downloading
     """
     # Create directory to save clinical data
-    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    disease_code_dir = os.path.join(cache_data_dir(), disease_code)
 
     if cache and os.path.exists(disease_code_dir):
         patient_data_file = [f for f in os.listdir(disease_code_dir) if PATIENT_DATA_FILE_CODE in f]
@@ -108,7 +108,7 @@ def find_clinical_files(search_tag, disease_code_dir):
     return files
 
 def _load_samples(disease_code, filter_vial=None):
-    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    disease_code_dir = os.path.join(cache_data_dir(), disease_code)
     sample_files = find_clinical_files('_biospecimen_sample_', disease_code_dir)
     sample_df = pd.concat(
         [load_tcga_tabfile(os.path.join(disease_code_dir, f))
@@ -119,7 +119,7 @@ def _load_samples(disease_code, filter_vial=None):
     return sample_df
 
 def _load_analytes(disease_code):
-    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    disease_code_dir = os.path.join(cache_data_dir(), disease_code)
     analyte_files = find_clinical_files('_biospecimen_analyte_', disease_code_dir)
     analyte_df = pd.concat(
         [load_tcga_tabfile(os.path.join(disease_code_dir, f))
@@ -140,7 +140,7 @@ def load_treatments(disease_code):
     treatment_df : Pandas dataframe
         Dataframe of treatment entries for each patient
     """
-    disease_code_dir = os.path.join(PYTCGA_BASE_DIRECTORY, disease_code)
+    disease_code_dir = os.path.join(cache_data_dir(), disease_code)
     treatment_files = find_clinical_files('_clinical_drug', disease_code_dir)
 
     treatment_df = pd.concat(
