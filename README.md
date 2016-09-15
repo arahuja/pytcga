@@ -1,4 +1,9 @@
 [![Build Status](https://travis-ci.org/arahuja/pytcga.svg?branch=master)](https://travis-ci.org/arahuja/pytcga)
+
+# DEPRECATED
+
+The TCGA API that this relied no longer exists and this project has been deprecated in favor of [PyGDC](http://github.com/arahuja/pygdc)
+
 ## pytcga
 
 Python library for accessing and processing public TCGA data
